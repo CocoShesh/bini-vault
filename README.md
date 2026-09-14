@@ -1,96 +1,152 @@
-# BINI Vault
+<div align="center">
 
-> A BINI-focused media archive with a modern streaming-style interface.
+# 🌸 BINI Vault
 
-BINI Vault organizes the existing public BINI video catalogs into a fast, responsive browsing experience. The app is designed around discovery first: a cinematic hero, searchable collections, member/year filters, an infinite video grid, and local personalization features.
+### Discover. Watch. Relive.
 
-## What it includes
+A modern BINI-focused media archive with a streaming-style experience built for fast discovery, easy browsing, and responsive playback.
 
-### Discovery
-- Cinematic background-only featured hero with BINI artwork
-- Collections: Kumu, Exclusives, Concerts, Fancams, Misc
-- Member and year filters
-- Newest / Oldest / Title A–Z sorting
-- Search across title, source, date, description, and tags
-- Surprise Me random playback
-- On This Day archive discovery
+**[🚀 Open the live BINI Vault](YOUR_DEPLOYED_URL_HERE)**
 
-### Watching
-- YouTube and direct-video playback
-- Continue Watching with local progress
-- My List stored locally on the device
-- Video details modal with next-video navigation
-- Responsive player and modal behavior
+</div>
 
-### Performance
-- Server-side catalog caching
-- 24-item initial batch
-- Append-only vertical infinite scrolling
-- Existing cards remain mounted when the next batch arrives
-- Lazy thumbnail loading with fallback sources
-- Browser-side local storage for user preferences and watch progress
-- No database required for the current version
+---
 
-## Responsive design
+## 👀 See it first
 
-BINI Vault uses different navigation patterns based on available width instead of hiding core navigation.
+### Desktop
 
-| Viewport | Navigation | Grid | Main behavior |
-| --- | --- | --- | --- |
-| Desktop | Full top navigation | 6 → 5 columns | Full search + filters |
-| Tablet / iPad | Compact top navigation | 4 columns | Full browsing controls with reduced spacing |
-| Phone | Logo + search on top, bottom navigation dock | 2 columns | Touch-friendly controls and fixed bottom navigation |
-| Small phone | Compact bottom navigation | 2 columns | Tighter hero typography and card spacing |
+![BINI Vault desktop interface](docs/responsive/Macbook-Air-1559x975.png)
 
-### Responsive references
+### Mobile
 
-These screenshots document the intended responsive layouts used while testing the interface:
+![BINI Vault mobile interface](docs/responsive/iPhone-14-Pro-393x852.png)
 
-**Desktop — MacBook Air**
+> BINI Vault is already deployed. Most users only need the live URL above — no installation or deployment is required.
 
-![Desktop](docs/responsive/Macbook-Air-1559x975.png)
+---
 
-**Tablet — iPad Air 5**
+## ✨ What is BINI Vault?
 
-![Tablet](docs/responsive/iPad-Air-5-820x1180.png)
+BINI Vault brings BINI video content from its configured public catalogs into one polished archive.
 
-**Phone — iPhone 14 Pro**
+Instead of searching through scattered links, users can:
 
-![iPhone 14 Pro](docs/responsive/iPhone-14-Pro-393x852.png)
+- discover recently added videos
+- browse collections
+- filter by member and year
+- search the archive
+- save videos to My List
+- continue watching where they left off
+- discover older content through archive features
 
-**Phone — iPhone 14 Pro Max**
+---
 
-![iPhone 14 Pro Max](docs/responsive/iPhone-14-Pro-Max-430x932.png)
+## 🎬 Highlights
 
-**Phone — Pixel 7 Pro**
+| | |
+| --- | --- |
+| 🌸 **Cinematic Home** | Featured content with a subtle blurred BINI artwork background |
+| 🔎 **Fast Discovery** | Search, collections, member filters, year filters, and sorting |
+| ♾️ **Infinite Archive** | Content loads progressively as you scroll |
+| ▶️ **Streaming-style Player** | YouTube and compatible direct-video playback |
+| ❤️ **My List** | Save videos locally for later |
+| ⏯️ **Continue Watching** | Keep local watch progress on the device |
+| 🎲 **Surprise Me** | Randomized discovery for when you don't know what to watch |
+| 📅 **On This Day** | Rediscover archive content from previous years |
+| 📱 **Responsive** | Desktop, tablet, and mobile layouts |
 
-![Pixel 7 Pro](docs/responsive/Pixel-7-Pro-480x1040.png)
+---
 
-## Data source architecture
+## 📚 Collections
+
+BINI Vault currently organizes content into collections such as:
+
+**Kumu · Exclusives · Concerts · Fancams · Misc**
+
+The archive can also be explored by:
+
+**Members · OT8 · Year · Tags · Date**
+
+---
+
+## ⚡ Built for a large archive
+
+The browser does not render the entire catalog at once.
 
 ```text
-Public Google Sheets catalogs
-          ↓
-      Server fetcher
-          ↓
-       CSV parser
-          ↓
-     Normalized video data
-          ↓
-      Server-side cache
-          ↓
-          API
-          ↓
-   Responsive BINI Vault UI
-          ↓
-     Video source / player
+Public Google Sheets
+        ↓
+Fetch + Parse
+        ↓
+Server Cache
+        ↓
+API
+        ↓
+First batch
+        ↓
+Render
+        ↓
+User scrolls
+        ↓
+Next batch
+        ↓
+Append only
 ```
 
-The catalog is sourced from the public Google Sheets already used by the project. The app does not require a database for the current release.
+This keeps the initial page lightweight while allowing the archive to grow without loading thousands of cards into the DOM at startup.
 
-## Source format
+---
 
-The normalizer understands the following catalog fields:
+## 📱 Responsive design
+
+BINI Vault changes its layout based on available screen size instead of simply shrinking the desktop interface.
+
+| Device | Navigation | Layout |
+| --- | --- | --- |
+| Desktop | Full top navigation | Multi-column grid |
+| Tablet / iPad | Compact top navigation | Reduced columns and spacing |
+| Phone | Top logo/search + bottom navigation | Two-column grid |
+| Small phone | Compact mobile controls | Tighter hero and card spacing |
+
+### Mobile reference
+
+![BINI Vault mobile responsive layout](docs/responsive/iPhone-14-Pro-393x852.png)
+
+---
+
+## 🧱 Architecture
+
+```text
+Google Sheets catalogs
+        │
+        ▼
+    CSV parser
+        │
+        ▼
+  Data normalizer
+        │
+        ▼
+ Server-side cache
+        │
+        ▼
+      REST API
+        │
+        ▼
+   BINI Vault UI
+     │      │
+     │      └── Local watch state
+     │
+     └───────── Video player
+```
+
+The frontend is separated from the catalog parsing layer so the UI can evolve without changing the source format.
+
+---
+
+## 📚 Catalog format
+
+The normalizer understands:
 
 ```text
 title
@@ -105,22 +161,49 @@ link
 ORIGINAL
 ```
 
-A playable URL is resolved from `link` first and falls back to `ORIGINAL` when necessary.
+Playback prefers:
 
-## Local development
+```text
+link
+```
+
+and falls back to:
+
+```text
+ORIGINAL
+```
+
+when necessary.
+
+---
+
+## 🛠️ For developers
+
+The live site is ready to use. Clone the repository only if you want to inspect, modify, or run BINI Vault locally.
+
+### Requirements
+
+- Node.js
+- npm
+
+### Run locally
 
 ```bash
+git clone https://github.com/YOUR_USERNAME/bini-vault.git
+cd bini-vault
 npm install
 npm start
 ```
 
-Open:
+Then open:
 
 ```text
 http://localhost:3000
 ```
 
-## Project structure
+---
+
+## 🗂️ Project structure
 
 ```text
 bini-vault/
@@ -130,29 +213,53 @@ bini-vault/
 │   └── assets/
 ├── src/
 │   └── sheets.js
+├── docs/
+│   └── responsive/
 ├── server.js
 ├── package.json
-├── vercel.json
-└── docs/
-    └── responsive/
+├── package-lock.json
+└── vercel.json
 ```
 
-## Design principles
+---
 
-BINI Vault is intentionally image-led and content-dense without becoming crowded:
+## 🎨 Design principles
 
-- The hero uses artwork as a blurred background rather than a foreground crop, keeping the interface readable while avoiding chopped group photos.
-- Video discovery uses a grid so the catalog is scannable instead of forcing a single horizontal row.
-- Mobile navigation moves to a bottom dock so Home, Browse, Collections, and My List stay reachable without squeezing the header.
-- Loading states use skeletons rather than developer-style loading messages.
-- Filtering and pagination append content instead of rebuilding the whole catalog.
+**Image-led**  
+The hero uses artwork as a blurred background layer instead of an aggressive foreground crop.
 
-## Status
+**Discovery-first**  
+Search, collections, filters, sorting, and infinite scrolling make a large archive easier to explore.
 
-BINI Vault is currently optimized as a lightweight archive and streaming frontend backed by public catalog data. It is designed to remain fast without introducing authentication or a database until those features are actually needed.
+**Responsive by default**  
+Desktop, tablet, and phone use different navigation patterns where appropriate.
 
+**Progressive loading**  
+Content is fetched and appended in small batches instead of rendering the whole archive at once.
 
+---
 
-```bash
-vercel
-```
+## 🔐 Data & storage
+
+The current release does not require:
+
+- user accounts
+- authentication
+- PostgreSQL / MySQL / MongoDB
+- a dedicated application database
+
+Personal features such as My List and watch progress are stored locally in the browser.
+
+Catalog data is sourced from the project's configured public Google Sheets.
+
+BINI Vault does not itself host the catalog's original video media; it provides the archive, discovery, and playback interface around the configured sources.
+
+---
+
+<div align="center">
+
+### 🌸 BINI Vault
+
+**Eight members. One archive.**
+
+</div>
