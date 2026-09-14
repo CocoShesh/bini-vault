@@ -48,23 +48,23 @@ These screenshots document the intended responsive layouts used while testing th
 
 **Desktop — MacBook Air**
 
-![Desktop](docs/responsive/macbook-air.png)
+![Desktop](docs/responsive/Macbook-Air-1559x975.png)
 
 **Tablet — iPad Air 5**
 
-![Tablet](docs/responsive/ipad-air-5.png)
+![Tablet](docs/responsive/iPad-Air-5-820x1180.png)
 
 **Phone — iPhone 14 Pro**
 
-![iPhone 14 Pro](docs/responsive/iphone-14-pro.png)
+![iPhone 14 Pro](docs/responsive/iPhone-14-Pro-393x852.png)
 
 **Phone — iPhone 14 Pro Max**
 
-![iPhone 14 Pro Max](docs/responsive/iphone-14-pro-max.png)
+![iPhone 14 Pro Max](docs/responsive/iPhone-14-Pro-Max-430x932.png)
 
 **Phone — Pixel 7 Pro**
 
-![Pixel 7 Pro](docs/responsive/pixel-7-pro.png)
+![Pixel 7 Pro](docs/responsive/Pixel-7-Pro-480x1040.png)
 
 ## Data source architecture
 
