@@ -151,6 +151,8 @@ BINI Vault is intentionally image-led and content-dense without becoming crowded
 
 BINI Vault is currently optimized as a lightweight archive and streaming frontend backed by public catalog data. It is designed to remain fast without introducing authentication or a database until those features are actually needed.
 
+
+
 ```bash
 vercel
 ```
