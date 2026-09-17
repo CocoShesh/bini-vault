@@ -1,0 +1,12 @@
+{
+  "name": "BINI Vault",
+  "short_name": "BINI Vault",
+  "description": "A fast BINI media archive and streaming interface.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#07080b",
+  "theme_color": "#ff3b8b",
+  "icons": [
+    {"src":"/assets/bini-vault-icon.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}
+  ]
+}

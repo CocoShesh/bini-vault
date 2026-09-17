@@ -1,0 +1,25 @@
+BINI Vault V5 setup
+
+1) Preserve your existing .env file from the current BINI Vault project.
+2) Replace the project files with this V5 build.
+3) From the project folder run:
+
+   npm install
+   npm run dev
+
+4) Open:
+
+   http://localhost:3000
+
+The build expects these environment variables:
+SOURCE_REACENTI_ID
+SOURCE_REACENTI_GID
+SOURCE_EXCLUSIVES_ID
+SOURCE_EXCLUSIVES_GID
+SOURCE_CONCERTS_ID
+SOURCE_CONCERTS_GID
+SOURCE_MISC_ID
+SOURCE_MISC_GID
+SOURCE_FANCAMS_ID
+SOURCE_FANCAMS_GID
+PORT (optional)
