@@ -75,7 +75,113 @@ function renderCurrentView(){const archive=state.view!=='home';el.main.classList
 function setActiveNav(name){const map={home:el.home,browse:el.browse,collections:el.collections,list:el.listNav,history:el.historyNav};Object.entries(map).forEach(([k,b])=>b?.classList.toggle('active',k===name));el.mobileNav?.querySelectorAll('[data-mobile-nav]').forEach(b=>b.classList.toggle('active',b.dataset.mobileNav===name))}
 function navHome(){state.view='home';state.query='';state.tag='';state.year='';state.source='all';state.member=null;state.myListMode=false;setActiveNav('home');renderCurrentView();if(state.allLoaded.size)setHero(firstMatchingLoaded());else loadPage(true);scrollTo({top:0,behavior:'smooth'})}function navBrowse(){state.view='browse';state.myListMode=false;setActiveNav('browse');renderCurrentView();if(!state.videos.length)loadPage(true);scrollTo({top:0,behavior:'smooth'})}function navCollections(){state.view='collections';setActiveNav('collections');renderCurrentView();scrollTo({top:0,behavior:'smooth'})}function navList(){state.view='list';state.myListMode=true;setActiveNav('list');renderCurrentView();scrollTo({top:0,behavior:'smooth'})}function navHistory(){state.view='history';state.myListMode=false;setActiveNav('history');renderCurrentView();scrollTo({top:0,behavior:'smooth'})}
 function collectionName(){return SOURCE_LABELS[state.source]||'BINI Videos'}function surpriseMe(){let pool=currentMatches();pool=pool.filter(v=>!state.watch[key(v)]?.completedAt);if(!pool.length)pool=currentMatches();if(!pool.length){toast('Load a few videos first');return}openModal(pool[Math.floor(Math.random()*pool.length)])}
-function searchNow(){state.query=el.searchInput.value.trim();state.tag='';state.year='';state.member=null;state.source='all';state.view='browse';setActiveNav('browse');renderCurrentView();loadPage(true);el.searchSuggestions.classList.add('hidden');scrollTo({top:0,behavior:'smooth'});if(state.query)toast(`Searching for “${state.query}”`)}function showSearchSuggestions(value){const q=value.trim().toLowerCase(),rec=['Mikha','Maloi','Live','Pantropiko','Concert'];const base=q?rec.filter(x=>x.toLowerCase().includes(q)):rec;el.searchSuggestions.innerHTML=`<div class="suggestion-title">${q?'Suggestions':'Popular searches'}</div>${base.slice(0,5).map(x=>`<button class="suggestion" data-suggest="${esc(x)}">⌕ ${esc(x)}</button>`).join('')}`;el.searchSuggestions.classList.toggle('hidden',!base.length);el.searchSuggestions.querySelectorAll('[data-suggest]').forEach(b=>b.onclick=()=>{el.searchInput.value=b.dataset.suggest;searchNow()})}
+function searchNow(){state.query=el.searchInput.value.trim();state.tag='';state.year='';state.member=null;state.source='all';state.view='browse';setActiveNav('browse');renderCurrentView();loadPage(true);el.searchSuggestions.classList.add('hidden');scrollTo({top:0,behavior:'smooth'});if(state.query)toast(`Searching for “${state.query}”`)}function showSearchSuggestions(value){
+  const q=value.trim().toLowerCase();
+
+  const topics=[
+    {label:'Live',kind:'Topic',icon:'search'},
+    {label:'Pantropiko',kind:'Topic',icon:'spark'},
+    {label:'Concert',kind:'Collection',icon:'play'},
+    {label:'Kumu',kind:'Collection',icon:'play'},
+    {label:'Interview',kind:'Topic',icon:'search'}
+  ];
+
+  const members=MEMBERS
+    .filter(name=>name!=='OT8')
+    .map(name=>({
+      label:name,
+      kind:'Member',
+      icon:'person'
+    }));
+
+  const loadedVideos=[...state.allLoaded.values()]
+    .filter(v=>v?.title)
+    .filter(v=>!q || String(v.title).toLowerCase().includes(q))
+    .slice(0,8)
+    .map(v=>({
+      label:strip(v.title).slice(0,70),
+      kind:v.sourceName||'Video',
+      icon:'play',
+      video:v
+    }));
+
+  const popular=[
+    {label:'Mikha',kind:'Member',icon:'person'},
+    {label:'Maloi',kind:'Member',icon:'person'},
+    {label:'Aiah',kind:'Member',icon:'person'},
+    {label:'Pantropiko',kind:'Topic',icon:'spark'},
+    {label:'Concert',kind:'Collection',icon:'play'}
+  ];
+
+  let candidates;
+
+  if(q){
+    candidates=[
+      ...members.filter(x=>x.label.toLowerCase().includes(q)),
+      ...topics.filter(x=>x.label.toLowerCase().includes(q)),
+      ...loadedVideos
+    ];
+  }else{
+    candidates=popular;
+  }
+
+  const seen=new Set();
+  const base=candidates.filter(x=>{
+    const k=x.label.toLowerCase();
+    if(seen.has(k))return false;
+    seen.add(k);
+    return true;
+  }).slice(0,5);
+
+  const icons={
+    person:`<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.2"></circle><path d="M5.5 19c.7-3.2 2.8-5 6.5-5s5.8 1.8 6.5 5"></path></svg>`,
+    search:`<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="5.8"></circle><path d="m15.2 15.2 4.3 4.3"></path></svg>`,
+    spark:`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 1.7 5.3L19 10l-5.3 1.7L12 17l-1.7-5.3L5 10l5.3-1.7L12 3Z"></path><path d="m19 15 .8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15Z"></path></svg>`,
+    play:`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 7 8 5-8 5V7Z"></path></svg>`
+  };
+
+  if(!base.length){
+    el.searchSuggestions.innerHTML=`
+      <div class="suggestion-head">
+        <div class="suggestion-eyebrow">NO QUICK MATCHES</div>
+        <div class="suggestion-caption">Press Enter to search the Vault</div>
+      </div>
+    `;
+    el.searchSuggestions.classList.remove('hidden');
+    return;
+  }
+
+  el.searchSuggestions.innerHTML=`
+    <div class="suggestion-head">
+      <div>
+        <div class="suggestion-eyebrow">${q?'SEARCH SUGGESTIONS':'EXPLORE BINI VAULT'}</div>
+        <div class="suggestion-caption">${q?'Quick matches':'Popular searches and members'}</div>
+      </div>
+    </div>
+
+    <div class="suggestion-list">
+      ${base.map(x=>`
+        <button class="suggestion" data-suggest="${esc(x.label)}">
+          <span class="suggestion-icon">${icons[x.icon]}</span>
+          <span class="suggestion-copy">
+            <span class="suggestion-label">${esc(x.label)}</span>
+            <span class="suggestion-kind">${esc(x.kind)}</span>
+          </span>
+          <span class="suggestion-arrow">↗</span>
+        </button>
+      `).join('')}
+    </div>
+  `;
+
+  el.searchSuggestions.classList.remove('hidden');
+
+  el.searchSuggestions
+    .querySelectorAll('[data-suggest]')
+    .forEach(b=>b.onclick=()=>{
+      el.searchInput.value=b.dataset.suggest;
+      searchNow();
+    });
+}
 async function shareVideo(v){const url=`${location.origin}${location.pathname}?video=${encodeURIComponent(v.sourceId)}:${encodeURIComponent(v.id)}`;try{await navigator.clipboard.writeText(url);toast('Share link copied')}catch{prompt('Copy this link',url)}}
 async function resolveSharedVideo(){const p=new URLSearchParams(location.search).get('video');if(!p)return;const [sourceId,id]=p.split(':');if(!sourceId||!id)return;try{const data=await api(`/api/video/${encodeURIComponent(sourceId)}/${encodeURIComponent(id)}`);if(data.video)openModal(data.video)}catch{}}
 function openCommand(){el.command.classList.remove('hidden');el.commandInput.value='';renderCommand('');el.commandInput.focus()}function closeCommand(){el.command.classList.add('hidden')}function renderCommand(q){const items=[['Search videos','Open Browse search','search'],['Continue Watching','Open your current videos','continue'],['My List','Open saved videos','list'],['History','Open recently opened videos','history'],['Members','Explore member pages','members'],['Collections','Explore curated collections','collections'],['Playlists','Open personal playlists','playlists'],['Era Timeline','Browse archive history','timeline'],['Vault Health','Check source health','health'],['Backup & Restore','Export or import local data','backup']];const f=items.filter(([a,b])=>`${a} ${b}`.toLowerCase().includes(q.toLowerCase()));el.commandList.innerHTML=f.map(([a,b,k])=>`<button class="command-item" data-command="${k}"><span><b>${a}</b><br><small>${b}</small></span><span>↵</span></button>`).join('');el.commandList.querySelectorAll('[data-command]').forEach(b=>b.onclick=()=>{closeCommand();const k=b.dataset.command;if(k==='search'){el.search.classList.add('open');el.searchInput.focus()}else if(k==='continue'){navHome();scrollTo({top:420,behavior:'smooth'})}else if(k==='list')navList();else if(k==='history')navHistory();else if(k==='members'||k==='timeline'||k==='playlists'||k==='health'||k==='backup')state.view=k;else state.view=k;setActiveNav(state.view);renderCurrentView()})}
@@ -83,9 +189,110 @@ function renderNotifications(){const notes=state.notifications.slice(0,12);el.no
 function updateFreshNotification(){const now=Date.now();const last=Number(localStorage.getItem('bini-vault-last-seen')||0);if(last&&now-last>86400000)addNotification('BINI Vault is ready for another visit','Your saved history, list, and playlists are still on this device.');localStorage.setItem('bini-vault-last-seen',String(now))}
 function cycleSpeed(){const vals=[0.75,1,1.25,1.5,2];const i=vals.indexOf(state.playerSpeed);state.playerSpeed=vals[(i+1)%vals.length];localStorage.setItem('bini-vault-speed',String(state.playerSpeed));el.speedBtn.textContent=`${state.playerSpeed}×`;if(ytPlayer){try{ytPlayer.setPlaybackRate(state.playerSpeed)}catch{}}else{const v=el.player.querySelector('video');if(v)v.playbackRate=state.playerSpeed}}
 function togglePiP(){const v=el.player.querySelector('video');if(!v||!document.pictureInPictureEnabled){toast('Picture-in-picture is unavailable for this video');return}v.requestPictureInPicture().catch(()=>toast('Picture-in-picture unavailable'))}
+
+window.__searchOutsideCloseFix=true;
+document.addEventListener('pointerdown',e=>{
+  if(!el.search.classList.contains('open'))return;
+  if(el.search.contains(e.target))return;
+
+  el.search.classList.remove('open');
+  el.searchSuggestions.classList.add('hidden');
+},true);
+
+window.__biniVaultSearchOutsideFinal=true;
+
+if(window.__biniSearchOutsideHandler){
+  window.removeEventListener('pointerdown',window.__biniSearchOutsideHandler,true);
+  window.removeEventListener('click',window.__biniSearchOutsideHandler,true);
+}
+
+window.__biniSearchOutsideHandler=(e)=>{
+  const target=e.target;
+  if(!(target instanceof Element))return;
+  if(!el.search.classList.contains('open'))return;
+
+  const insideSearch=target.closest('#search');
+  if(insideSearch)return;
+
+  el.search.classList.remove('open');
+  el.searchSuggestions.classList.add('hidden');
+  el.searchInput.blur();
+};
+
+window.addEventListener(
+  'pointerdown',
+  window.__biniSearchOutsideHandler,
+  true
+);
+
+window.addEventListener(
+  'click',
+  window.__biniSearchOutsideHandler,
+  true
+);
+
+window.__searchBlurFinalFix=true;
+
+const closeSearchSuggestions=()=>{
+  el.searchSuggestions.classList.add('hidden');
+};
+
+el.searchInput.addEventListener('blur',()=>{
+  setTimeout(()=>{
+    const active=document.activeElement;
+    if(!el.search.contains(active)){
+      el.searchSuggestions.classList.add('hidden');
+      el.search.classList.remove('open');
+    }
+  },0);
+});
+
+el.search.addEventListener('focusout',()=>{
+  setTimeout(()=>{
+    const active=document.activeElement;
+    if(!el.search.contains(active)){
+      el.searchSuggestions.classList.add('hidden');
+      el.search.classList.remove('open');
+    }
+  },0);
+});
+
+window.addEventListener('pointerup',e=>{
+  if(!el.search.contains(e.target)){
+    el.searchSuggestions.classList.add('hidden');
+    el.search.classList.remove('open');
+  }
+},true);
 window.__navList=navList;window.__navCollections=navCollections;window.__openByKey=k=>{const v=state.allLoaded.get(k)||state.listSnapshots[k]||state.history[k];if(v)openModal(v)};
-el.searchToggle.onclick=()=>{el.search.classList.toggle('open');if(el.search.classList.contains('open'))el.searchInput.focus()};el.searchInput.onkeydown=e=>{if(e.key==='Enter')searchNow();if(e.key==='Escape'){el.searchInput.value='';el.searchSuggestions.classList.add('hidden')}};el.searchInput.oninput=()=>{el.searchClear.classList.toggle('hidden',!el.searchInput.value);showSearchSuggestions(el.searchInput.value)};el.searchClear.onclick=()=>{el.searchInput.value='';el.searchClear.classList.add('hidden');el.searchSuggestions.classList.add('hidden');searchNow()};el.home.onclick=navHome;el.browse.onclick=navBrowse;el.collections.onclick=navCollections;el.listNav.onclick=navList;el.historyNav.onclick=navHistory;el.brand.onclick=e=>{e.preventDefault();navHome()};el.surpriseBtn.onclick=surpriseMe;el.statsBtn.onclick=()=>{state.view='stats';renderCurrentView();setActiveNav('home');scrollTo({top:0,behavior:'smooth'})};el.moreBtn.onclick=()=>{el.moreMenu.classList.toggle('hidden');el.notificationPanel.classList.add('hidden')};el.moreMenu.querySelectorAll('[data-more]').forEach(b=>b.onclick=async()=>{const k=b.dataset.more;el.moreMenu.classList.add('hidden');if(k==='install'){if(deferredInstallPrompt){deferredInstallPrompt.prompt();await deferredInstallPrompt.userChoice;deferredInstallPrompt=null;toast('Install prompt closed')}else toast('Your browser will show install options when available');return}state.view=k;renderCurrentView();setActiveNav('home');scrollTo({top:0,behavior:'smooth'})});el.notifyBtn.onclick=()=>{el.notificationPanel.classList.toggle('hidden');el.moreMenu.classList.add('hidden');renderNotifications()};el.clearNotifications.onclick=()=>{state.notifications=[];localStorage.setItem('bini-vault-notifications','[]');renderNotifications()};el.modalClose.onclick=closeModal;el.modal.onclick=e=>{if(e.target===el.modal)closeModal()};el.listBtn.onclick=()=>toggleList();el.favoriteBtn.onclick=()=>toggleFavorite();el.markWatchedBtn.onclick=()=>markWatched();el.speedBtn.onclick=cycleSpeed;el.pipBtn.onclick=togglePiP;el.shareBtn.onclick=()=>shareVideo(state.selected);el.queueBtn.onclick=()=>addToQueue();el.playlistBtn.onclick=()=>addToPlaylist();el.qrBtn.onclick=()=>showQRCode();el.nextBtn.onclick=()=>{const n=state.queue.length?nextQueued():findNextVideo(state.selected);if(n)openModal(n);else closeModal()};el.mobileNav?.querySelectorAll('[data-mobile-nav]').forEach(b=>b.onclick=()=>{const n=b.dataset.mobileNav;if(n==='home')navHome();else if(n==='browse')navBrowse();else if(n==='collections')navCollections();else if(n==='list')navList();else {el.moreMenu.classList.toggle('hidden')}});
-el.commandInput.oninput=()=>renderCommand(el.commandInput.value);el.commandInput.onkeydown=e=>{if(e.key==='Escape')closeCommand()};el.command.onclick=e=>{if(e.target===el.command)closeCommand()};el.topbar.addEventListener('click',()=>{});window.addEventListener('scroll',()=>el.topbar.classList.toggle('scrolled',scrollY>24));el.topbar.classList.toggle('scrolled',window.scrollY>24);document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();openCommand()}if(e.key==='/'&&!['INPUT','TEXTAREA'].includes(document.activeElement.tagName)){e.preventDefault();el.search.classList.add('open');el.searchInput.focus()}if(e.key==='Escape'&&!el.modal.classList.contains('hidden'))closeModal();if(!el.modal.classList.contains('hidden')){if(e.code==='Space'&&el.player.querySelector('video')){e.preventDefault();const v=el.player.querySelector('video');v.paused?v.play():v.pause()}if(e.key.toLowerCase()==='f'){const v=el.player.querySelector('video');v?.requestFullscreen?.()}if(e.key.toLowerCase()==='m'){const v=el.player.querySelector('video');if(v)v.muted=!v.muted}if(e.key.toLowerCase()==='n')el.nextBtn.click();if(e.key==='ArrowLeft'||e.key==='ArrowRight'){const v=el.player.querySelector('video');if(v){e.preventDefault();v.currentTime=Math.max(0,Math.min(v.duration||1e9,v.currentTime+(e.key==='ArrowLeft'?-5:5)))}}if(e.key==='ArrowUp'||e.key==='ArrowDown'){const v=el.player.querySelector('video');if(v){e.preventDefault();v.volume=Math.max(0,Math.min(1,v.volume+(e.key==='ArrowUp'?.05:-.05)))}}}});
+el.searchToggle.onclick=()=>{el.search.classList.toggle('open');if(el.search.classList.contains('open'))el.searchInput.focus()};el.searchInput.onkeydown=e=>{if(e.key==='Enter')searchNow();if(e.key==='Escape'){el.searchInput.value='';el.searchSuggestions.classList.add('hidden')}};el.searchInput.oninput=()=>{el.searchClear.classList.toggle('hidden',!el.searchInput.value);showSearchSuggestions(el.searchInput.value)};el.searchClear.onclick=()=>{el.searchInput.value='';el.searchClear.classList.add('hidden');el.searchSuggestions.classList.add('hidden');searchNow()};el.home.onclick=navHome;el.browse.onclick=navBrowse;el.collections.onclick=navCollections;el.listNav.onclick=navList;el.historyNav.onclick=navHistory;el.brand.onclick=e=>{e.preventDefault();navHome()};el.surpriseBtn.onclick=surpriseMe;el.statsBtn.onclick=()=>{state.view='stats';renderCurrentView();setActiveNav('home');scrollTo({top:0,behavior:'smooth'})};el.moreBtn.onclick=()=>{
+  el.notificationPanel.classList.add('hidden');
+
+  const open=el.moreMenu.classList.toggle('hidden');
+
+  if(!open){
+    const r=el.moreBtn.getBoundingClientRect();
+    el.moreMenu.style.top=`${r.bottom+10}px`;
+    el.moreMenu.style.left=`${Math.min(r.left,window.innerWidth-el.moreMenu.offsetWidth-12)}px`;
+  }
+};el.moreMenu.querySelectorAll('[data-more]').forEach(b=>b.onclick=async()=>{const k=b.dataset.more;el.moreMenu.classList.add('hidden');if(k==='install'){if(deferredInstallPrompt){deferredInstallPrompt.prompt();await deferredInstallPrompt.userChoice;deferredInstallPrompt=null;toast('Install prompt closed')}else toast('Your browser will show install options when available');return}state.view=k;renderCurrentView();setActiveNav('home');scrollTo({top:0,behavior:'smooth'})});el.notifyBtn.onclick=()=>{el.notificationPanel.classList.toggle('hidden');el.moreMenu.classList.add('hidden');renderNotifications()};el.clearNotifications.onclick=()=>{state.notifications=[];localStorage.setItem('bini-vault-notifications','[]');renderNotifications()};el.modalClose.onclick=closeModal;el.modal.onclick=e=>{if(e.target===el.modal)closeModal()};el.listBtn.onclick=()=>toggleList();el.favoriteBtn.onclick=()=>toggleFavorite();el.markWatchedBtn.onclick=()=>markWatched();el.speedBtn.onclick=cycleSpeed;el.pipBtn.onclick=togglePiP;el.shareBtn.onclick=()=>shareVideo(state.selected);el.queueBtn.onclick=()=>addToQueue();el.playlistBtn.onclick=()=>addToPlaylist();el.qrBtn.onclick=()=>showQRCode();el.nextBtn.onclick=()=>{const n=state.queue.length?nextQueued():findNextVideo(state.selected);if(n)openModal(n);else closeModal()};el.mobileNav?.querySelectorAll('[data-mobile-nav]').forEach(b=>b.onclick=()=>{const n=b.dataset.mobileNav;if(n==='home')navHome();else if(n==='browse')navBrowse();else if(n==='collections')navCollections();else if(n==='list')navList();else {el.moreMenu.classList.toggle('hidden')}});
+el.commandInput.oninput=()=>renderCommand(el.commandInput.value);el.commandInput.onkeydown=e=>{if(e.key==='Escape')closeCommand()};el.command.onclick=e=>{if(e.target===el.command)closeCommand()};
+
+document.addEventListener('click',e=>{
+  const target=e.target;
+
+  if(el.search.classList.contains('open')&&!el.search.contains(target)){
+    el.search.classList.remove('open');
+    el.searchSuggestions.classList.add('hidden');
+  }
+
+  if(!el.notificationPanel.classList.contains('hidden')&&!el.notificationPanel.contains(target)&&!el.notifyBtn.contains(target)){
+    el.notificationPanel.classList.add('hidden');
+  }
+
+  if(!el.moreMenu.classList.contains('hidden')&&!el.moreMenu.contains(target)&&!el.moreBtn.contains(target)){
+    el.moreMenu.classList.add('hidden');
+  }
+});window.addEventListener('scroll',()=>el.topbar.classList.toggle('scrolled',scrollY>24));el.topbar.classList.toggle('scrolled',window.scrollY>24);document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();openCommand()}if(e.key==='/'&&!['INPUT','TEXTAREA'].includes(document.activeElement.tagName)){e.preventDefault();el.search.classList.add('open');el.searchInput.focus()}if(e.key==='Escape'&&!el.modal.classList.contains('hidden'))closeModal();if(!el.modal.classList.contains('hidden')){if(e.code==='Space'&&el.player.querySelector('video')){e.preventDefault();const v=el.player.querySelector('video');v.paused?v.play():v.pause()}if(e.key.toLowerCase()==='f'){const v=el.player.querySelector('video');v?.requestFullscreen?.()}if(e.key.toLowerCase()==='m'){const v=el.player.querySelector('video');if(v)v.muted=!v.muted}if(e.key.toLowerCase()==='n')el.nextBtn.click();if(e.key==='ArrowLeft'||e.key==='ArrowRight'){const v=el.player.querySelector('video');if(v){e.preventDefault();v.currentTime=Math.max(0,Math.min(v.duration||1e9,v.currentTime+(e.key==='ArrowLeft'?-5:5)))}}if(e.key==='ArrowUp'||e.key==='ArrowDown'){const v=el.player.querySelector('video');if(v){e.preventDefault();v.volume=Math.max(0,Math.min(1,v.volume+(e.key==='ArrowUp'?.05:-.05)))}}}});
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstallPrompt=e});
 async function init(){renderLoadingShell();renderNotifications();try{await api('/api/sources');state.view='home';setActiveNav('home');await loadPage(true);startHeroTimer();updateFreshNotification();await resolveSharedVideo();if('serviceWorker' in navigator)navigator.serviceWorker.register('/sw.js').catch(()=>{})}catch(e){console.error(e);renderErrorState(e)}}
 init();
