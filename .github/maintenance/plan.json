@@ -1,0 +1,93 @@
+{
+  "start": "2026-10-10",
+  "end": "2026-11-08",
+  "timezone": "Asia/Manila",
+  "reviewed_base": "c7d16dbd81523a57c5e02e943d7ec57ec7dde404",
+  "tasks": [
+    {
+      "id": "contributing",
+      "due": "2026-10-13",
+      "title": "Add project-specific contribution and verification guide",
+      "files": {
+        "CONTRIBUTING.md": "# Contributing to bini-vault\n\n## Start with the correct application\n\nUse a maintained Node.js version with built-in fetch (Node.js 24 is used by the maintenance checks). Run `npm ci`, copy `.env.example` to `.env`, configure the required public Google Sheets source IDs/GIDs, and run `npm start`. Open http://localhost:3000; PORT can change this. `npm run dev` uses Node watch mode.\n\n## Keep changes reviewable\n\nDescribe the observed problem and the behavior after your change. Keep one concern per pull request; avoid unrelated dependency updates and formatting churn. Read existing repository instructions before changing source.\n\n## Verification\n\nRun `python3 scripts/source-preflight.py` once available. Start the server and check `GET /api/health` independently of upstream catalogs, then `GET /api/source-health` and a small `GET /api/videos?page=1&limit=2` request. A healthy process does not prove every sheet or video host is available. No test/build script is declared in package.json.\n\nFor browser changes, check 390 × 844, 768 × 1024 and 1440 × 900 viewports. Look for horizontal overflow, clipped controls, readable text and keyboard focus. Record the actual browser and dimensions; a screenshot alone does not prove the whole journey.\n\nUseful end-to-end check: Open the archive, search/filter, load another page, save an item to My List, reload, and check playback for a permitted fixture link. Verify a missing source or unavailable video produces an understandable state.\n\n## Handle sensitive data\n\nNever attach personal watch history, local-storage dumps or private spreadsheet content. Catalogs must be public as intended. Redact sensitive links and screenshots.\n\n## Before opening a pull request\n\n- Explain what changed and why.\n- List commands actually run and their results; state skipped checks explicitly.\n- Include reproducible steps for bug fixes and relevant screenshots for UI changes.\n- Describe migration or rollback needs when changing persisted data.\n"
+      },
+      "source_hashes": {
+        "package.json": "350ad41491e0609659d86725bad3f426576d293c0cb028da8c11a36eaf972b65",
+        "server.js": "c77a8ff444291a3d0d54c9dbbe44fc0f5c8474d858e3bbc8edbc3845f0990b15",
+        "src/sheets.js": "c31c5b699a70999f40f46a9908c904f28e1ca23d1ce97c4fef1209b738828e66",
+        ".env.example": "85848701bfb82630bcf822f0272e4682c5f7edab3d444d440c316e0bbce04296"
+      }
+    },
+    {
+      "id": "bug-report",
+      "due": "2026-10-18",
+      "title": "Add reproducible bug report form with privacy guidance",
+      "files": {
+        ".github/ISSUE_TEMPLATE/bug-report.yml": "name: Bug report\ndescription: Report a reproducible problem in bini-vault\ntitle: \"[Bug]: \"\nbody:\n  - type: markdown\n    attributes:\n      value: \"Never attach personal watch history, local-storage dumps or private spreadsheet content. Catalogs must be public as intended. Redact sensitive links and screenshots.\"\n  - type: textarea\n    id: steps\n    attributes:\n      label: Steps to reproduce\n      description: Include the application entry point and smallest reproducible sequence.\n    validations:\n      required: true\n  - type: textarea\n    id: expected\n    attributes:\n      label: Expected behavior\n    validations:\n      required: true\n  - type: textarea\n    id: actual\n    attributes:\n      label: Actual behavior\n    validations:\n      required: true\n  - type: input\n    id: environment\n    attributes:\n      label: Environment\n      description: Browser/OS, viewport if relevant, runtime version, and commit or deployment.\n    validations:\n      required: true\n  - type: textarea\n    id: evidence\n    attributes:\n      label: Sanitized logs or screenshots\n      description: Remove secrets and personal data. Include a failing request status when relevant.\n"
+      },
+      "source_hashes": {
+        "package.json": "350ad41491e0609659d86725bad3f426576d293c0cb028da8c11a36eaf972b65",
+        "server.js": "c77a8ff444291a3d0d54c9dbbe44fc0f5c8474d858e3bbc8edbc3845f0990b15",
+        "src/sheets.js": "c31c5b699a70999f40f46a9908c904f28e1ca23d1ce97c4fef1209b738828e66",
+        ".env.example": "85848701bfb82630bcf822f0272e4682c5f7edab3d444d440c316e0bbce04296"
+      }
+    },
+    {
+      "id": "pull-request",
+      "due": "2026-10-23",
+      "title": "Add pull request verification and recovery template",
+      "files": {
+        ".github/pull_request_template.md": "## Problem and resulting behavior\n\nExplain the concrete trigger, what happened before, and what happens now.\n\n## Verification\n\nList the commands or manual steps actually run, browser/viewports if relevant, and pass/fail results. Do not check off tests that were not run.\n\nSuggested project checks: Run `python3 scripts/source-preflight.py` once available. Start the server and check `GET /api/health` independently of upstream catalogs, then `GET /api/source-health` and a small `GET /api/videos?page=1&limit=2` request. A healthy process does not prove every sheet or video host is available. No test/build script is declared in package.json.\n\nRelevant user journey: Open the archive, search/filter, load another page, save an item to My List, reload, and check playback for a permitted fixture link. Verify a missing source or unavailable video produces an understandable state.\n\n## Risks and recovery\n\nDescribe persisted-data effects, provider/API changes, and rollback steps if applicable.\n\n## Privacy\n\nNever attach personal watch history, local-storage dumps or private spreadsheet content. Catalogs must be public as intended. Redact sensitive links and screenshots.\n"
+      },
+      "source_hashes": {
+        "package.json": "350ad41491e0609659d86725bad3f426576d293c0cb028da8c11a36eaf972b65",
+        "server.js": "c77a8ff444291a3d0d54c9dbbe44fc0f5c8474d858e3bbc8edbc3845f0990b15",
+        "src/sheets.js": "c31c5b699a70999f40f46a9908c904f28e1ca23d1ce97c4fef1209b738828e66",
+        ".env.example": "85848701bfb82630bcf822f0272e4682c5f7edab3d444d440c316e0bbce04296"
+      }
+    },
+    {
+      "id": "source-preflight",
+      "due": "2026-10-28",
+      "title": "Add dependency-free source syntax checks and CI",
+      "files": {
+        "scripts/source-preflight.py": "\"\"\"Dependency-free source syntax check; does not contact providers or run the app.\"\"\"\nimport ast\nfrom html.parser import HTMLParser\nfrom pathlib import Path\nimport subprocess\nimport tempfile\n\nroot = Path(__file__).resolve().parents[1]\npaths = subprocess.check_output(['git', 'ls-files', '-z'], cwd=root).decode().split('\\0')\ncount = 0\nclass InlineScripts(HTMLParser):\n    def __init__(self):\n        super().__init__(); self.active=False; self.chunks=[]; self.scripts=[]\n    def handle_starttag(self, tag, attrs):\n        attrs=dict(attrs)\n        if tag == 'script':\n            self.active = not attrs.get('src') and attrs.get('type', '').lower() in ('', 'module', 'text/javascript', 'application/javascript')\n            self.chunks=[]\n    def handle_data(self, data):\n        if self.active: self.chunks.append(data)\n    def handle_endtag(self, tag):\n        if tag == 'script' and self.active:\n            self.scripts.append(''.join(self.chunks)); self.active=False\nfor name in paths:\n    path = root / name\n    if not path.is_file(): continue\n    if path.suffix in ('.js', '.mjs', '.cjs'):\n        subprocess.run(['node', '--check', str(path)], check=True); count += 1\n    elif path.suffix == '.py':\n        ast.parse(path.read_text(), filename=name); count += 1\n    elif path.suffix == '.html':\n        parser=InlineScripts(); parser.feed(path.read_text())\n        for script in parser.scripts:\n            with tempfile.TemporaryDirectory() as directory:\n                probe=Path(directory)/'inline.mjs'; probe.write_text(script)\n                subprocess.run(['node', '--check', str(probe)], check=True); count += 1\nif not count: raise SystemExit('No supported source files checked.')\nprint(f'PASS: {count} JavaScript/Python source and inline-script syntax checks. TypeScript, browser behavior, and provider access were not exercised.')\n",
+        ".github/workflows/source-preflight.yml": "name: Source preflight\non:\n  push:\n    paths: ['**/*.js', '**/*.mjs', '**/*.cjs', '**/*.py', '**/*.html', '.github/workflows/source-preflight.yml']\n  pull_request:\n    paths: ['**/*.js', '**/*.mjs', '**/*.cjs', '**/*.py', '**/*.html', '.github/workflows/source-preflight.yml']\n  workflow_dispatch:\npermissions:\n  contents: read\nconcurrency:\n  group: source-preflight-${{ github.ref }}\n  cancel-in-progress: true\njobs:\n  syntax:\n    runs-on: ubuntu-latest\n    timeout-minutes: 5\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-node@v4\n        with:\n          node-version: '24'\n      - run: python3 scripts/source-preflight.py\n"
+      },
+      "source_hashes": {
+        "package.json": "350ad41491e0609659d86725bad3f426576d293c0cb028da8c11a36eaf972b65",
+        "server.js": "c77a8ff444291a3d0d54c9dbbe44fc0f5c8474d858e3bbc8edbc3845f0990b15",
+        "src/sheets.js": "c31c5b699a70999f40f46a9908c904f28e1ca23d1ce97c4fef1209b738828e66",
+        ".env.example": "85848701bfb82630bcf822f0272e4682c5f7edab3d444d440c316e0bbce04296"
+      }
+    },
+    {
+      "id": "configuration-check",
+      "due": "2026-11-02",
+      "title": "Add configuration diagnostics without exposing secrets",
+      "files": {
+        "scripts/check-local-setup.py": "\"\"\"Check required environment names without printing credential values.\"\"\"\nimport os\nfrom pathlib import Path\nimport re\nimport sys\n\nREQUIRED = ['SOURCE_REACENTI_ID', 'SOURCE_EXCLUSIVES_ID', 'SOURCE_CONCERTS_ID', 'SOURCE_MISC_ID', 'SOURCE_FANCAMS_ID']\nENV_FILE = '.env'\nvalues = {}\nif ENV_FILE:\n    path = Path(__file__).resolve().parents[1] / ENV_FILE\n    if path.is_file():\n        for raw in path.read_text().splitlines():\n            match = re.match(r\"^\\s*(?:export\\s+)?([A-Za-z_][A-Za-z0-9_]*)\\s*=\\s*(.*?)\\s*$\", raw)\n            if match:\n                value=match[2].split(' #', 1)[0].strip().strip('\\\"').strip(\"'\")\n                values[match[1]]=value\nvalues.update(os.environ)\nmissing=[]\nfor name in REQUIRED:\n    value=values.get(name, '').strip()\n    if not value or value.lower().startswith(('replace-', 'your-', '<')):\n        missing.append(name)\nif 'CREDENTIAL_ENCRYPTION_KEY' in REQUIRED:\n    if not re.fullmatch(r'[0-9a-fA-F]{64}', values.get('CREDENTIAL_ENCRYPTION_KEY', '')):\n        if 'CREDENTIAL_ENCRYPTION_KEY' not in missing: missing.append('CREDENTIAL_ENCRYPTION_KEY (must be 64 hex characters)')\nif missing:\n    print('Missing or placeholder configuration: ' + ', '.join(missing))\n    sys.exit(1)\nprint('PASS: Required configuration is present. Values were not printed; provider access was not tested.')\n"
+      },
+      "source_hashes": {
+        "package.json": "350ad41491e0609659d86725bad3f426576d293c0cb028da8c11a36eaf972b65",
+        "server.js": "c77a8ff444291a3d0d54c9dbbe44fc0f5c8474d858e3bbc8edbc3845f0990b15",
+        "src/sheets.js": "c31c5b699a70999f40f46a9908c904f28e1ca23d1ce97c4fef1209b738828e66",
+        ".env.example": "85848701bfb82630bcf822f0272e4682c5f7edab3d444d440c316e0bbce04296"
+      }
+    },
+    {
+      "id": "operations",
+      "due": "2026-11-07",
+      "title": "Document project-specific troubleshooting and recovery",
+      "files": {
+        "docs/maintenance/OPERATIONS.md": "# bini-vault: troubleshooting and recovery\n\n## Scope\n\nThis guide describes the checked-in application as reviewed on 2026-10-10. Confirm current source and deployment configuration before operating on live data.\n\n## Local setup\n\nUse a maintained Node.js version with built-in fetch (Node.js 24 is used by the maintenance checks). Run `npm ci`, copy `.env.example` to `.env`, configure the required public Google Sheets source IDs/GIDs, and run `npm start`. Open http://localhost:3000; PORT can change this. `npm run dev` uses Node watch mode.\n\n## Diagnose the failing boundary\n\nUse /api/health to check the server, /api/source-health for catalog status and /api/videos for actual browsing. SOURCE_*_ID values identify spreadsheets, while SOURCE_*_GID values identify tabs; they are not interchangeable. My List and watch progress are browser-local, not backed up by the Node server. Validate CSV column names and public sharing when a catalog is empty. The /api/frame route requires FFmpeg; basic browsing does not prove frame extraction is available. Rate-limited clients should honor Retry-After rather than repeatedly refreshing.\n\n## Safe verification\n\nRun `python3 scripts/source-preflight.py` once available. Start the server and check `GET /api/health` independently of upstream catalogs, then `GET /api/source-health` and a small `GET /api/videos?page=1&limit=2` request. A healthy process does not prove every sheet or video host is available. No test/build script is declared in package.json.\n\nRun `python3 scripts/check-local-setup.py` for a local configuration check (or static HTTP check for photobooth). This does not authenticate to remote providers or launch an application workload.\n\n## Reproduce before changing data\n\nOpen the archive, search/filter, load another page, save an item to My List, reload, and check playback for a permitted fixture link. Verify a missing source or unavailable video produces an understandable state.\n\nUse fixture data and an isolated deployment. Keep the last working revision available. Record the runtime, affected route/provider and error status before retrying. Do not repeatedly retry a rate-limited upstream.\n\n## Information safe to share\n\nNever attach personal watch history, local-storage dumps or private spreadsheet content. Catalogs must be public as intended. Redact sensitive links and screenshots.\n\n## After a recovery\n\nRecheck the failing journey and one normal journey, confirm that persisted/browser-local data is still available where expected, and document any steps that could not be exercised.\n"
+      },
+      "source_hashes": {
+        "package.json": "350ad41491e0609659d86725bad3f426576d293c0cb028da8c11a36eaf972b65",
+        "server.js": "c77a8ff444291a3d0d54c9dbbe44fc0f5c8474d858e3bbc8edbc3845f0990b15",
+        "src/sheets.js": "c31c5b699a70999f40f46a9908c904f28e1ca23d1ce97c4fef1209b738828e66",
+        ".env.example": "85848701bfb82630bcf822f0272e4682c5f7edab3d444d440c316e0bbce04296"
+      }
+    }
+  ]
+}
